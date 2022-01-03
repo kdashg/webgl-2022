@@ -1,0 +1,120 @@
+<!-- Any copyright is dedicated to the Public Domain.
+   - https://creativecommons.org/publicdomain/zero/1.0/ -->
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset=utf-8>
+      <script src=../webgl-2022.js></script>
+   </head>
+   <body>
+      Originally: <a href='https://jdashg.github.io/misc/webgl/ccw-point.html'>https://jdashg.github.io/misc/webgl/ccw-point.html</a>
+      <br>
+      <br>
+      <script>
+
+// -
+
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+
+document.body.appendChild(document.createElement('br'));
+
+const log_div = document.createElement('div');
+document.body.appendChild(log_div);
+
+function Log(t) {
+   console.log(t);
+   log_div.innerText += t + '\n';
+}
+
+canvas.addEventListener('webglcontextlost', function(e) {
+   Log(`[${performance.now() / 1000.0}] webglcontextlost`);
+   e.preventDefault();
+}, false);
+
+canvas.addEventListener('webglcontextrestored', function() {
+   Log(`[${performance.now() / 1000.0}] webglcontextrestored`);
+   Init();
+}, false);
+
+// -
+
+const attribs = {
+   alpha: true,
+   premultipliedAlpha: false,
+   antialias: true,
+   depth: true,
+   stencil: false,
+   preserveDrawingBuffer: true,
+};
+canvas.width = canvas.height = 300;
+const gl = canvas.getContext('webgl', attribs);
+
+// -
+
+let prog;
+
+function Init() {
+   gl.setEnabled('depth-test', true);
+
+   const VSRC = `\
+      attribute vec3 aPosition;
+
+      void main(void) {
+         gl_PointSize = 50.0;
+         gl_Position = vec4(aPosition, 1.0);
+      }
+   `;
+   const FSRC = `\
+      precision mediump float;
+
+      uniform vec4 uColor;
+
+      void main(void) {
+         gl_FragColor = uColor;
+      }
+   `;
+   prog = gl.createLinkedProgram(VSRC, FSRC, {'aPosition': 2});
+   prog.info = prog.demandLinkInfoJank();
+
+   // Let's enable that attrib array:
+   gl.setEnabledVertexAttribArray(2, true);
+
+   gl.useProgram(prog);
+
+   Frame();
+}
+
+function Frame() {
+   var a = 3 * performance.now() / 1000;
+
+   var x = 0.7 * Math.cos(a);
+   var y = 0.7 * Math.sin(a);
+
+   if (gl.isContextLost()) return;
+   gl.clearColor(0.3, 0.3, 0.3, 1.0);
+   gl.clear(-1);
+
+   // Actually, let's disable the attrib array behavior.
+   gl.setEnabledVertexAttribArray(prog.info.attribs.aPosition.loc, false);
+
+   prog.info.attribs.aPosition.set(0.7, 0.0, +0.1);
+   prog.info.uniforms.uColor.set(1.0, 0.0, 0.0, 1.0);
+   gl.drawArrays('points', 0, 1);
+
+   prog.info.attribs.aPosition.set(0.0, 0.7, -0.1);
+   prog.info.uniforms.uColor.set(0.0, 1.0, 0.0, 1.0);
+   gl.drawArrays('points', 0, 1);
+
+   prog.info.attribs.aPosition.set(x, y, 0.0);
+   prog.info.uniforms.uColor.set(0.0, 0.0, 1.0, 1.0);
+   gl.drawArrays('points', 0, 1);
+
+   requestAnimationFrame(Frame);
+}
+
+Init();
+
+      </script>
+   </body>
+</html>
