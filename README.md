@@ -64,7 +64,7 @@ directly on `gl.`, like `gl.createVertexArray()` or `gl.drawArraysInstanced()`.
 * `webgl1.texStorage('2d', 3, 'rgba8', 100, 100);`
 
 ### Common patterns combined into helpful functions
-```javascript=
+```javascript
 gl.createCompleteFramebuffer({
     0: [tex], // boring tex2d
     1: [rb], // rb
@@ -77,7 +77,7 @@ Otherwise, returns the string from `checkFramebufferIncompleteStr`.
 Auto-collects any auto-generated resources (like the depth-stencil
 attachment above).
 
-```javascript=
+```javascript
 const vbo = gl.createBufferData('array-buffer', VERTEX_DATA, 'static-draw');
 //const vbo = gl.createBuffer();
 //const was = gl.getParameter('array-buffer');
@@ -86,19 +86,19 @@ const vbo = gl.createBufferData('array-buffer', VERTEX_DATA, 'static-draw');
 //gl.bindBuffer('array-buffer', was);
 ```
 
-```javascript=
+```javascript
 const colors = gl.createTextureStorage('2d', 5, 'rgba8', W, H, 1);
 const ints = gl.createTextureStorage('2d', 5, 'rgba8ui', W, H, 1, 'nearest');
 const nomips = gl.createTextureStorage('2d', 1, 'rgba8', W, H, 1);
 // Also sets CLAMP_TO_EDGE instead of REPEAT
 ```
 
-```javascript=
+```javascript
 const vs = gl.createCompiledShader('vertex-shader',
                      'void main() { gl_Position = vec4(0,0,0,1); }');
 ```
 
-```javascript=
+```javascript
 const VSRC = `\
    attribute vec3 aPosition;
 
@@ -122,7 +122,7 @@ prog = gl.createLinkedProgram(VSRC, FSRC, {'aPosition': 0});
 These compile the new shader and link the new program respectively,
 but they don't check compile or link status.
 
-```javascript=
+```javascript
 const dstFb = null; // backbuffer
 const mask = -1;
 multisampledFb.resolveTo(dstFb, mask, 0, 0, W, H);
@@ -130,7 +130,7 @@ multisampledFb.resolveTo(dstFb, mask, 0, 0, W, H);
 ```
 
 ### New GLSL builtins
-```c=
+```c
 #if __VERSION__ >= 300
 // FNV-1a: A solid and simple non-cryptographic hash.
 // https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
@@ -151,7 +151,7 @@ int fnv1a32Begin(int bytes) {
 ```
 
 Vertex shader only:
-```c=
+```c
 #if __VERSION__ >= 300
 int autoPositionTrianglesQuad() {
    VERTS = [vec2(0,0), vec2(1,0), vec2(0,1),
@@ -164,7 +164,7 @@ int autoPositionTrianglesQuad() {
 
 ### Async!
 
-```javascript=
+```javascript
 async function myUpload() {
    const vbo = gl.createBufferData('array-buffer', VERTEX_DATA, 'static-draw');
    await fenceAsync();
@@ -174,13 +174,13 @@ async function myUpload() {
 ```
 
 Async downloads: (see https://jdashg.github.io/misc/async-gpu-downloads.html)
-```javascript=
+```javascript
 const dstViewNowFilled = await gl.fetchSubData(srcByteOffset, dstView);
 const data = await gl.fetchSubData(srcByteOffset, new Uint8Array(byteLen));
 ```
 
 Easy color picking!
-```javascript=
+```javascript
 async function myColorPicker(fb, x, y) {
    const pixel = fb.fetchPixels(x, y, 1, 1, 'rgba', 'u8', new Uint8Array(4));
    return pixel;
@@ -207,7 +207,7 @@ Some method names have minor changes to be more web-api-idiomatic.
 
 ### Rich program link info objects with attrib/uniform setters
 
-```javascript=
+```javascript
    const VSRC = `\
       attribute vec3 aPosition;
 
@@ -264,7 +264,7 @@ Some method names have minor changes to be more web-api-idiomatic.
 "Claimed" because it's all hand-written, so we expect to have bugs to fix.
 
 ### Both WebGL 1 and 2
-```javascript=
+```javascript
 enum WebGLError {
    "", // No error
    "out-of-memory",
@@ -416,7 +416,7 @@ partial interface WebGLTexture {
 ```
 
 ### WebGL 1 only
-```javascript=
+```javascript
 partial interface WebGLRenderingContext {
    undefined drawBuffers(sequence<GLenum> buffers);
    undefined vertexAttribDivisor(GLuint index, GLuint divisor);
@@ -436,7 +436,7 @@ partial interface WebGLRenderingContext {
 ```
 
 ### WebGL 2 only
-```javascript=
+```javascript
 partial interface mixin WebGL2RenderingContextBase {
    async undefined fenceAsync();
 };
